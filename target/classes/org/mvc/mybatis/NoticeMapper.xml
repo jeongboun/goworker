@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.mvc.mybatis.NoticeMapper">
+
+	<insert id="noticeWrite">
+	insert into notice(nsubject,ncontent,ndate,num)
+	 		values(#{nsubject}, #{ncontent},sysdate,seq_notice.nextval)
+	</insert>
+	
+ 	<select id="getList" resultType="org.mvc.bean.NoticeDTO">
+		<![CDATA[
+			select * from (select num, nsubject, ncontent,ndate, nreadcount,  rownum r from 
+	(select *from notice order by num desc)) where r >= #{startRow} and r<= #{endRow}
+		]]>
+	</select>
+	
+	<update id="notice_updatePro">
+		update notice set nsubject=#{nsubject}, ncontent=#{ncontent},ndate=sysdate where num=#{num}
+	</update>
+	
+	 
+	
+	<select id="getContent" resultType="org.mvc.bean.NoticeDTO">
+		select * from notice where num = #{num}
+	</select>
+	
+	
+	<select id="getArticleCount" resultType="int">
+		select count(*) from notice
+	</select>
+		
+	<update id="readUP"> 
+		update notice set
+			nreadcount = nreadcount+1
+				where num=#{num}
+	</update>
+
+	<delete id="notice_del">
+		delete notice where num=#{num}
+	</delete>
+	
+	
+	
+	
+</mapper>   
+
+	

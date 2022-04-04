@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.mvc.mybatis.AdminMapper">
+
+    <select id="count" resultType="int">
+		select count(*) from recipe
+	</select>
+    
+    <select id="getRecipeList"  resultType="org.mvc.bean.AdminDTO">
+		<![CDATA[
+			select * from (
+				select num,writer,ingredient,subject,regdate,explain,image,tag,good,visit,
+				nation_code,level_code,time_code,igrdnt_code,state,rownum r from (
+					select * from recipe order by num) 
+				order by num desc)
+			where r >= #{startRow} and r <= #{endRow} 
+		]]>
+	</select>
+	
+	<select id="getRecipeGoodList"  resultType="org.mvc.bean.AdminDTO">
+		<![CDATA[
+			select * from (
+				select num,writer,ingredient,subject,regdate,explain,image,tag,good,visit,
+				nation_code,level_code,time_code,igrdnt_code,state,rownum r from (
+					select * from recipe order by good) 
+				order by good)
+			where r >= #{startRow} and r <= #{endRow}
+		]]>
+	</select>
+	
+	<select id="getRecipeGoodListDesc"  resultType="org.mvc.bean.AdminDTO">
+		<![CDATA[
+			select * from (
+				select num,writer,ingredient,subject,regdate,explain,image,tag,good,visit,
+				nation_code,level_code,time_code,igrdnt_code,state,rownum r from (
+					select * from recipe order by good) 
+				order by good desc)
+			where r >= #{startRow} and r <= #{endRow}
+		]]>
+	</select>
+	
+	<select id="getRecipeVisitList"  resultType="org.mvc.bean.AdminDTO">
+		<![CDATA[
+			select * from (
+				select num,writer,ingredient,subject,regdate,explain,image,tag,good,visit,
+				nation_code,level_code,time_code,igrdnt_code,state,rownum r from (
+					select * from recipe order by visit) 
+				order by visit )
+			where r >= #{startRow} and r <= #{endRow}
+		]]>
+	</select>
+	
+	<select id="getRecipeVisitListDesc"  resultType="org.mvc.bean.AdminDTO">
+		<![CDATA[
+			select * from (
+				select num,writer,ingredient,subject,regdate,explain,image,tag,good,visit,
+				nation_code,level_code,time_code,igrdnt_code,state,rownum r from (
+					select * from recipe order by visit) 
+				order by visit desc)
+			where r >= #{startRow} and r <= #{endRow}
+		]]>
+	</select>
+	
+	<update id="adminDelete">
+		update recipe set
+			state = 0
+			where num=#{num}
+	</update>
+	
+	<update id="adminUndelete">
+		update recipe set
+			state = 1
+			where num=#{num}
+	</update>
+	
+	<select id="getKoreaCount" resultType="int">
+		select count(*) from recipe where nation_code='korea'
+	</select>
+	<select id="getUsaCount" resultType="int">
+		select count(*) from recipe
+			where nation_code='usa'
+	</select>
+	<select id="getJapanCount" resultType="int">
+		select count(*) from recipe
+			where nation_code = 'japan'
+	</select>
+	<select id="getChinaCount" resultType="int">
+		select count(*) from recipe
+			where nation_code = 'china'
+	</select>
+	<select id="getMexicoCount" resultType="int">
+		select count(*) from recipe
+			where nation_code = 'mexico'
+	</select>
+	<select id="getItalyCount" resultType="int">
+		select count(*) from recipe
+			where nation_code ='italy'
+	</select>
+	<select id="getVitnamCount" resultType="int">
+		select count(*) from recipe
+			where nation_code = 'vitnam'
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

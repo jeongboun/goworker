@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.mvc.mybatis.RecipeMapper">
+
+	<select id="getList" resultType="org.mvc.bean.RecipeDTO">
+		<![CDATA[
+		select * from recipe where num > 0
+		]]>
+	</select>
+	
+		<select id="getMainList" resultType="org.mvc.bean.RecipeDTO">
+		<![CDATA[
+		select * from (select * from recipe where readCount > 30) 
+		where rownum <= 5
+		]]>
+		</select>
+		
+	
+		<select id="getBestList" resultType="org.mvc.bean.RecipeDTO">
+			SELECT 
+				* 
+				from (
+					select 
+							num, writer, title, ingredient, explain, image, tag, good, readcount, nation_code,
+					    	level_code, time_code, to_char(regdate, 'yyyy-MM-dd HH24:MI') as regdate, rownum r 
+					from (select * from recipe where <![CDATA[good > 10 ]]>or <![CDATA[readCount > 50 ]]> order by regdate desc)
+					<if test="searchWord != null">
+					where
+						${searchCategory} like '%'||#{searchWord}||'%'
+					</if>			
+					)
+			where
+			<![CDATA[
+			r >= #{startRow} and r <= #{endRow}
+			]]>
+	</select>
+	
+
+	<select id="getArticles" resultType="org.mvc.bean.RecipeDTO">
+			SELECT 
+				* 
+				from (
+					select 
+							num, writer, title, ingredient, explain, image, tag, good, readcount, nation_code,
+					    	level_code, time_code, to_char(regdate, 'yyyy-MM-dd HH24:MI') as regdate, rownum r 
+					from (select * from recipe where state = 1 order by regdate desc)
+					<if test="searchWord != null">
+					where
+						${searchCategory} like '%'||#{searchWord}||'%'
+					</if>			
+					)
+			where
+			<![CDATA[
+			r >= #{startRow} and r <= #{endRow}
+			]]>
+	</select>
+	
+		<!-- 내가갖고있는 재료로 레시피 찾기 ${searchCategory} like '%'||#{searchWord}||'%' -->
+		<select id="getRecipeList" resultType="org.mvc.bean.RecipeDTO">
+			SELECT 
+				* 
+				from (
+					select 
+							num, writer, title, ingredient, explain, image, tag, good, readcount, nation_code,
+					    	level_code, time_code, to_char(regdate, 'yyyy-MM-dd HH24:MI') as regdate, rownum r 
+					from (select * from recipe order by regdate desc)
+					
+					where
+					1=1
+	
+					<if test="ingredient_meat != null">
+					and	
+						ingredient_meat like '%'||#{ingredient_meat}||'%'
+					</if>	
+					
+					<if test="ingredient_vegetable != null">
+					and
+						ingredient_vegetable like '%'||#{ingredient_vegetable}||'%'	
+					</if>
+					<if test="ingredient_fish != null">
+					and
+						ingredient_fish like '%'||#{ingredient_fish}||'%'	
+					</if>
+					<if test="ingredient_egg != null">
+					and
+						ingredient_egg like '%'||#{ingredient_egg}||'%'	
+					</if>
+					<if test="ingredient_instant != null">
+					and
+						ingredient_instant like '%'||#{ingredient_instant}||'%'	
+					</if>
+					<if test="ingredient_grain != null">
+					and
+						ingredient_grain like '%'||#{ingredient_grain}||'%'	
+					</if>
+					<if test="ingredient_fruit != null">
+					and
+						ingredient_fruit like '%'||#{ingredient_fruit}||'%'	
+					</if>
+					<if test="ingredient_nut != null">
+					and
+						ingredient_nut like '%'||#{ingredient_nut}||'%'	
+					</if>
+													
+					)
+			where
+			<![CDATA[
+			r >= #{startRow} and r <= #{endRow}
+			]]>
+	</select>
+
+		<!-- title말고 ingredient에서 검색. ingredient에 있는 모든 재료들.. ,로 구분  -->
+		<select id="getRecipes" resultType="org.mvc.bean.RecipeDTO">
+
+			select 
+				* 
+				from (
+					select 
+							num, writer, title, ingredient, explain, image, tag, good, readcount, nation_code,
+					    	level_code, time_code, regdate, rownum r 
+					from (select * from recipe)
+					
+					where
+						title like '%'||#{searchRecipe}||'%'
+					
+					order by num desc
+					)
+					where
+					<![CDATA[ 
+					r >= #{startRow} and r <= #{endRow}
+					]]>
+	</select>	
+
+	<select id="getArticle" resultType="org.mvc.bean.RecipeDTO">
+		select * from recipe where
+		num = #{num}
+	</select>
+
+	<!--count: 전체 리스트 갯수 조회-->
+	<select id="getArticleCount" resultType="int">
+		select 
+		    count(*) 
+		from
+		    recipe
+		<if test="searchWord != null">
+		where
+			${searchCategory} like '%'||#{searchWord}||'%'
+		</if>
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="readcountUpdate">
+		update recipe set readcount=readcount+1 where num =
+		#{num}
+	</update>
+	
+	<!-- 좋아요 증가 -->
+	<update id="goodUpdate">
+		update recipe set good=good+1 where num =
+		#{num}
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="articleDelete"
+		parameterType="org.mvc.bean.RecipeDTO">
+		delete recipe where num=#{num}
+	</delete>
+
+	<select id="search" resultType="org.mvc.bean.RecipeDTO">
+		select * from recipe where title
+		like ?
+	</select>
+
+	<select id="getSearchCount" resultType="int">
+		select count(*) from
+		recipe where title like '%'||#{searchRecipe}||'%'
+	</select>
+	
+	<select id="getBestCount" resultType="int">
+		select count(*) from recipe 
+			where <![CDATA[ (good > 10]]> or <![CDATA[readCount > 50)]]>		
+			<if test="searchWord != null">
+		and
+			${searchCategory} like '%'||#{searchWord}||'%'
+		</if>
+		</select>
+
+	<select id="getRecipeCount" resultType="int">
+		select count(*) from
+		recipe where
+				1=1
+					
+					<if test="ingredient_meat != null">
+					and	
+						ingredient_meat like '%'||#{ingredient_meat}||'%'
+					</if>	
+					<if test="ingredient_vegetable != null">
+					and
+						ingredient_vegetable like '%'||#{ingredient_vegetable}||'%'	
+					</if>
+					<if test="ingredient_fish != null">
+					and
+						ingredient_fish like '%'||#{ingredient_fish}||'%'	
+					</if>
+					<if test="ingredient_egg != null">
+					and
+						ingredient_egg like '%'||#{ingredient_egg}||'%'	
+					</if>
+					<if test="ingredient_instant != null">
+					and
+						ingredient_instant like '%'||#{ingredient_instant}||'%'	
+					</if>
+					<if test="ingredient_grain != null">
+					and
+						ingredient_grain like '%'||#{ingredient_grain}||'%'	
+					</if>
+					<if test="ingredient_fruit != null">
+					and
+						ingredient_fruit like '%'||#{ingredient_fruit}||'%'	
+					</if>
+					<if test="ingredient_nut != null">
+					and
+						ingredient_nut like '%'||#{ingredient_nut}||'%'	
+					</if>
+	</select>
+
+<insert id="write" parameterType="org.mvc.bean.RecipeDTO">
+        insert into recipe(num,writer, title, ingredient, explain,tag,nation_code, level_code, time_code,brief,video,ingredient_meat,ingredient_vegetable,ingredient_fish,ingredient_egg,ingredient_instant,ingredient_grain,ingredient_fruit,ingredient_nut)
+            values(seq_recipe.nextval,#{writer},#{title},#{ingredient},#{explain},#{tag},#{nation_code},#{level_code},#{time_code},#{brief},#{video},#{ingredient_meat},#{ingredient_vegetable},#{ingredient_fish},#{ingredient_egg},#{ingredient_instant},#{ingredient_grain},#{ingredient_fruit},#{ingredient_nut})
+    </insert>
+
+	<update id="imgUpdate">
+		update recipe set image=#{image} where
+		num=#{num}
+	</update>
+	
+		<update id="updateArticle">
+		update recipe set writer=#{writer},
+			title=#{title},
+			ingredient=#{ingredient},
+			explain=#{explain},
+			image=#{image},
+			tag=#{tag},
+			brief=#{brief},
+			video=#{video},
+			nation_code=#{nation_code},
+			level_code=#{level_code},
+			time_code=#{time_code},
+			igrdnt_code=#{igrdnt_code}
+			
+			where num=#{num}
+	</update>
+</mapper>
+
+	

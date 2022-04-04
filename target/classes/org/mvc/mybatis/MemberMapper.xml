@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.mvc.mybatis.MemberMapper">
+	<insert id="input">
+		insert into member_login(id,password,phone_number,birthday,email,gender,reg_date)
+			values(#{id},#{password},#{phone_number},#{birthday},#{email},#{gender},sysdate)	
+	</insert>
+	
+	<update id="UserInfoUpdate">
+		update member_info set
+			rolo = #{rolo},
+			last_login = #{last_login},
+			point = #{point},
+			conAttendDay =#{conAttendDay},
+			totalAttendDay =#{totalAttendDay},
+			 
+			where id = #{id}
+	</update>
+	
+	<select id="loginCheck" resultType="int">
+		select count(*) from member_login
+			where id=#{id} and password=#{password}
+	</select>
+	<!-- 아이디 중복체크 -->
+	<select id="userNameCheck" resultType="int"> 
+		select count(*) from member_login
+			where username=#{username}
+	</select>
+	
+	<select id="findUserName" resultType="int">
+		select count(*) from member_login
+			where email=#{email} and password=#{password}
+	</select>
+	
+	
+	<!-- 최근 3개월 동안 유저 포인트 조회 -->
+	<select id="RecentllyMonthUserPoint" resultType="int"> 
+		select * from member_info 
+	where prothumb_date (point) between trunc(add_months(sysdate,-2)+1)-to_char(sysdatem'DD')
+	and trunc(last_day(sysdate))+0.99999421;
+	
+	</select>
+	
+	<select id="idCheck" resultType="int">
+		select count(*) from member_login where id=#{id}
+	
+	</select>
+	
+	<select id="getKakaoId" resultType="int">
+		select count(*) from member_login where id=#{kid}
+	
+	</select>
+	
+	<insert id="kakaoInsert">
+	insert into member_login(id,gender,reg_date) values(#{kid},#{gender},#{connected_at})
+	<!-- insert into member_login(id,gender)
+			values(#{kid},#{gender})	 -->
+	</insert>
+
+	<select id="findId" resultType="String">
+	 select id from member_login where email=#{email} and phone_number=#{phone_number}
+	</select>
+		
+	<select id="findPw" resultType="String">
+	 select password from member_login where id=#{id} and phone_number=#{phone_number}
+	</select>	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

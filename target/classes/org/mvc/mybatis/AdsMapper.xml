@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="org.mvc.mybatis.AdsMapper">
+
+	<update id="adsCountUpdate">
+		update ads set ad_visit=ad_visit+/+${id} and count=count+1 where ad_subject=${ad_subject}
+	</update>
+	
+	<select id="getVisitorCount">
+		select count(*) from ads where subject=$subject
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(*) from ads
+	</select>
+	
+	<select id="getAdsList"  resultType="org.mvc.bean.AdsDTO">
+		<![CDATA[
+			select * from (
+				select ads_num,ads_costomer,ads_start,ads_end,ads_fee,depo_date,
+				ads_img,ads_contents,ads_url,ads_visit,advs_bank,advs_bank_account,rownum r from (
+					select * from ads order by ads_num) 
+				order by ads_num desc)
+			where r >= #{startRow} and r <= #{endRow} 
+		]]>
+	</select>
+	
+	<insert id="adsInsert" parameterType="org.mvc.bean.AdsDTO">
+        insert into ads(ads_num,ads_costomer, ads_start, ads_end,ads_fee,
+        depo_date,ads_img,ads_contents, ads_url,advs_bank,advs_bank_account)
+            values(seq_ads.nextval,#{ads_costomer},#{ads_start},#{ads_end},#{ads_fee},
+            #{depo_date},#{ads_img},#{ads_contents},#{ads_url},#{advs_bank},#{advs_bank_account})
+    </insert>
+	<select id="getShow"  resultType="org.mvc.bean.AdsDTO">
+		select * from ads where ads_num=#{ads_num}
+	</select>
+	
+</mapper>

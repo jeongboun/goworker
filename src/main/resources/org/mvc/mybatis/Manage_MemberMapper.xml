@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="org.mvc.mybatis.Manage_MemberMapper">
+    
+   		 <select id="Manage_Member_List" resultType="org.mvc.bean.Manage_MemberDTO">
+		SELECT 
+		  id AS Id, 
+		  name AS Name,
+		  email AS Email,
+		  regdate AS Regdate
+		FROM manage_member
+		ORDER BY Id
+	</select>
+	
+	<insert id="InsertMember">
+		INSERT INTO manage_member
+			(id, pw, name, email)
+		VALUES 
+			(#{Id}, #{Pw}, #{Name}, #{Email})	
+	</insert>
+	
+	<select id="Manage_Member_information" resultType="org.mvc.bean.Manage_MemberDTO">
+		SELECT 
+		  id AS Id,
+		  pw AS Pw,
+		  name AS Name,
+		  email AS Email,
+		  regdate AS Regdate,
+		FROM manage_member
+		WHERE id = #{Id}
+	</select>
+	
+	<update id="updateMember">
+		UPDATE manage_member
+		SET
+			pw = #{Pw},
+			name = #{Name},
+			email = #{Email},
+			updatedate = SYSDATE
+		WHERE id = #{Id}	
+	</update>
+	
+	<delete id="deleteMember">
+		DELETE FROM manage_member
+		WHERE id = #{Id}
+	</delete>
+	
+	<select id="checkPw" resultType="int">
+		SELECT 
+			COUNT(*) 
+		FROM manage_member
+		WHERE id = #{Id} AND pw = #{Pw}
+	</select>
+</mapper>
